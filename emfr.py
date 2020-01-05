@@ -50,17 +50,23 @@ def getParams():
         nx=int((xma-xmi)/step)+1
         ny=int((yma-ymi)/step)+1
         nz=int((zma-zmi)/step)+1
+        print(f"getParams(plast): nx={nx} ny={ny} nz={nz}")
         plast.append(list())
         plast[-1].append(q/(nx*ny*nz))
         plast[-1].append(np.zeros((0,3)))
-        for ix in range(nx):
-            for iy in range(ny):
-                for iz in range(nz):
-                    a1=plast[-1][-1]
-                    a2=np.array([xmi,ymi,zmi])+np.array([ix,iy,iz])*step
-                    print(a1.shape,a2.shape)
-                    plast[-1][-1]=np.vstack([a1,a2])
-            print(f"getParams: ix={ix} .. {nx}")
+        xyzmi=np.array([xmi,ymi,zmi])
+        if True:
+            lst=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
+            plast[-1][-1]=np.array(lst)*step+xyzmi
+        else:
+            for ix in range(nx):
+                for iy in range(ny):
+                    for iz in range(nz):
+                        a1=plast[-1][-1]
+                        a2=np.array([xmi,ymi,zmi])+np.array([ix,iy,iz])*step
+                        print(a1.shape,a2.shape)
+                        plast[-1][-1]=np.vstack([a1,a2])
+                print(f"getParams: ix={ix} .. {nx}")
     ap['plast']=plast
     return
 

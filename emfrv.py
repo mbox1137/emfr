@@ -110,6 +110,7 @@ def main():
 #    surf = ax.plot_trisurf(X, Y, Z, linewidth=0, antialiased=False)
     X, Y, Z = xs[:,0], xs[:,1], xs[:,2]
     ax.scatter(X,Y,Z,'.')
+#    ax.grid(True)
 
     plt.title(f"step={gp['step'][0][0]} porog={porog}*max")
     plt.savefig('emfrv.png', dpi=300)
