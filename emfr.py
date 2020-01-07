@@ -72,10 +72,18 @@ def getParams():
 
 def emfr1(vec, p):	#array[n:3], array[1:3]
     r=vec-p
-#    epl=r/np.linalg.norm(r)**3
-    epl=r/norm(r)**3
-    exyz=np.sum(epl,axis=0)
-    return exyz
+    return np.sum(r/norm(r)**3,axis=0)
+
+kk=0
+def emfr2(p):	#array[1:3]
+    global kk
+    e=np.zeros((1,3))
+    for q,pla in ap['plast']:
+        e+=emfr1(pla,p)*q
+    kk+=1
+    if kk%1000 == 0:
+        print(f"{time.ctime(time.time())} {kk}")
+    return norm(e)
 
 def main():
     print('-'*40)
@@ -89,21 +97,27 @@ def main():
     nx,ny,nz=map(int,ap['shape'])
     field=np.zeros(ap['shape'])
     print(f"main: field.shape={field.shape}")
-#    apkip=ap['kip']
-#    apmi=ap['mi']
-    for ix in range(nx):
-        print(f"{time.ctime(time.time())} main: ix={ix} .. {nx}")
-        for iy in range(ny):
-            for iz in range(nz):
-                ixyz=np.array([ix,iy,iz])
-                xyz=ap['kip']*ixyz+ap['mi']
+    if True:
+        ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
+        xyz=ap['kip']*ixyz+ap['mi']
+        print(f"xyz.shape={xyz.shape}")
+        exyz=list(map(emfr2,xyz))
+        print(f"exyz.shape={exyz.shape}")
+        sys.exit()
+    else:
+        for ix in range(nx):
+            print(f" main: ix={ix} .. {nx}")
+            for iy in range(ny):
+                for iz in range(nz):
+                    ixyz=np.array([ix,iy,iz])
+                    xyz=ap['kip']*ixyz+ap['mi']
 #                xyz=apkip*ixyz+apmi
-                e=np.zeros((1,3))
-                for plast in ap['plast']:
-                    q,pla=plast
-                    e+=emfr1(pla,xyz)*q
+                    e=np.zeros((1,3))
+                    for plast in ap['plast']:
+                        q,pla=plast
+                        e+=emfr1(pla,xyz)*q
 #                field[ix,iy,iz]=np.linalg.norm(e)
-                field[ix,iy,iz]=norm(e)
+                    field[ix,iy,iz]=norm(e)
     print('-'*40)
 
     with open("gp.dump", 'wb') as fp:
