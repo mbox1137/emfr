@@ -101,9 +101,11 @@ def main():
         ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
         xyz=ap['kip']*ixyz+ap['mi']
         print(f"xyz.shape={xyz.shape}")
-        exyz=list(map(emfr2,xyz))
+        exyz=np.array(list(map(emfr2,xyz)))
         print(f"exyz.shape={exyz.shape}")
-        sys.exit()
+        for k in range(len(exyz)):
+            ix,iy,iz=ixyz[k]
+            field[ix,iy,iz]=exyz[k]
     else:
         for ix in range(nx):
             print(f" main: ix={ix} .. {nx}")
