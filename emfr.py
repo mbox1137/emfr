@@ -4,6 +4,7 @@ import sys, time
 import pickle
 import numpy as np
 from numpy.linalg import norm
+import numexpr as ne
 
 def getCMD(fp):
     while(True):
@@ -72,7 +73,12 @@ def getParams():
 
 def emfr1(vec, p):	#array[n:3], array[1:3]
     r=vec-p
-    return np.sum(r/norm(r)**3,axis=0)
+#    return np.sum(r/norm(r)**3,axis=0)
+#    tmp=r/norm(r)**3
+    rn3=norm(r)**3
+    tmp=ne.evaluate('r/rn3')
+#    tmp=r/rn3
+    return np.sum(tmp,axis=0)
 
 kk=0
 def emfr2(p):	#array[1:3]
@@ -103,6 +109,9 @@ def main():
         print(f"xyz.shape={xyz.shape}")
         exyz=np.array(list(map(emfr2,xyz)))
         print(f"exyz.shape={exyz.shape}")
+
+        sys.exit()
+
         for k in range(len(exyz)):
             ix,iy,iz=ixyz[k]
             field[ix,iy,iz]=exyz[k]
