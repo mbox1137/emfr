@@ -1,6 +1,7 @@
 *.png
 *.dump
 *~
+*_
 proba
 *.tgz
 ffp.sh

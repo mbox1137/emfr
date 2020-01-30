@@ -11,6 +11,10 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
+
+#aa=np.array(list(range(60))).reshape((4,5,3))
+#print(aa.tolist())
+
 try:
     porog=float(sys.argv[1])
 except IndexError:
@@ -47,6 +51,26 @@ def main():
     print("field:", field.size)
     print("xs:", xs.shape)
 
+    ng=11
+    fldl=[[list() for i in range(ng)] for j in range(ng)]
+    print("fldl:", len(fldl), len(fldl[0]))
+    zmi=np.min(xs[:,2])
+    zma=np.max(xs[:,2])
+    for k in range(xs.shape[0]):
+        ix,iy,iz=ixs[k]
+        x,y,z=xs[k]
+        fi=np.arctan2(y,x)
+        ifi=int((fi+np.pi)/(2*np.pi)*(ng-1))
+        iz=int((z-zmi)/(zma-zmi)*(ng-1))
+        fldl[iz][ifi].append(xs[k])
+    flda=[[np.array([np.nan, np.nan, np.nan]) for i in range(ng)] for j in range(ng)]
+    for iz in range(ng):
+        for ifi in range(ng):
+            if len(fldl[iz][ifi]) > 0:
+                flda[iz][ifi]=np.mean(np.array(fldl[iz][ifi]), axis=0).tolist()
+    fld=np.array(flda)
+    print(f"fld.shape={fld.shape}")
+
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.view_init(20,35)	#degree
@@ -58,8 +82,17 @@ def main():
         for edge in getRectEdges(rt):
             ax.plot(*edge,color)
 
-    X, Y, Z = xs[:,0], xs[:,1], xs[:,2]
-    ax.scatter(X,Y,Z,'.')
+    if False:
+        X, Y, Z = xs[:,0], xs[:,1], xs[:,2]
+        ax.scatter(X,Y,Z,'.')
+
+    color='g'
+    for row in range(ng):
+        X, Y, Z = fld[:,row,0], fld[:,row,1], fld[:,row,2]
+        ax.plot(X,Y,Z,color)
+    for col in range(ng):
+        X, Y, Z = fld[col,:,0], fld[col,:,1], fld[col,:,2]
+        ax.plot(X,Y,Z,color)
 
     plt.title(f"step={gp['step'][0][0]} porog={porog}*max")
     plt.savefig('emfrv.png', dpi=300)
