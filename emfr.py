@@ -54,26 +54,32 @@ def getParams():
         print(f"getParams(plast): nx={nx} ny={ny} nz={nz}")
         plast.append(list())
         plast[-1].append(q/(nx*ny*nz))
-        plast[-1].append(np.zeros((0,3)))
+#        plast[-1].append(None)	#np.zeros((0,3)))
         xyzmi=np.array([xmi,ymi,zmi])
         if True:
             lst=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
-            plast[-1][-1]=np.array(lst)*step+xyzmi
+            plast[-1].append(np.array(lst)*step+xyzmi)
+#            print(f"plast={plast}")
         else:
             for ix in range(nx):
                 for iy in range(ny):
                     for iz in range(nz):
-                        a1=plast[-1][-1]
+                        a1=np.zeros((0,3))
                         a2=np.array([xmi,ymi,zmi])+np.array([ix,iy,iz])*step
                         print(a1.shape,a2.shape)
-                        plast[-1][-1]=np.vstack([a1,a2])
+                        plast[-1].append(np.vstack([a1,a2]))
                 print(f"getParams: ix={ix} .. {nx}")
     ap['plast']=plast
     return
 
 def emfr1(vec, p):	#array[n:3], array[1:3]
     r=vec-p
-    return np.sum(r/norm(r)**3,axis=0)
+#    print(f"r={r.shape}")
+    e=r/norm(r)**3
+#    print(f"e={e.shape}")
+    e0=np.sum(e,axis=0)
+#    print(f"e0={e0}")
+    return e0
 #    tmp=r/norm(r)**3
 #    rn3=norm(r)**3
 #    tmp=ne.evaluate('r/rn3')
@@ -109,9 +115,6 @@ def main():
         print(f"xyz.shape={xyz.shape}")
         exyz=np.array(list(map(emfr2,xyz)))
         print(f"exyz.shape={exyz.shape}")
-
-        sys.exit()
-
         for k in range(len(exyz)):
             ix,iy,iz=ixyz[k]
             field[ix,iy,iz]=exyz[k]

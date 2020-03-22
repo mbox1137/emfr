@@ -82,17 +82,17 @@ def main():
         for edge in getRectEdges(rt):
             ax.plot(*edge,color)
 
-    if False:
+    if True:
         X, Y, Z = xs[:,0], xs[:,1], xs[:,2]
         ax.scatter(X,Y,Z,'.')
-
-    color='g'
-    for row in range(ng):
-        X, Y, Z = fld[:,row,0], fld[:,row,1], fld[:,row,2]
-        ax.plot(X,Y,Z,color)
-    for col in range(ng):
-        X, Y, Z = fld[col,:,0], fld[col,:,1], fld[col,:,2]
-        ax.plot(X,Y,Z,color)
+    else:
+        color='g'
+        for row in range(ng):
+            X, Y, Z = fld[:,row,0], fld[:,row,1], fld[:,row,2]
+            ax.plot(X,Y,Z,color)
+        for col in range(ng):
+            X, Y, Z = fld[col,:,0], fld[col,:,1], fld[col,:,2]
+            ax.plot(X,Y,Z,color)
 
     plt.title(f"step={gp['step'][0][0]} porog={porog}*max")
     plt.savefig('emfrv.png', dpi=300)
