@@ -47,6 +47,7 @@ def getParams():
 #-------------------------------------------------
     plast=list()
     for pl in gp["rect"]:
+        print(f"pl={pl}")
         q,xmi,xma,ymi,yma,zmi,zma = pl
         nx=int((xma-xmi)/step)+1
         ny=int((yma-ymi)/step)+1
@@ -69,12 +70,14 @@ def getParams():
                         print(a1.shape,a2.shape)
                         plast[-1].append(np.vstack([a1,a2]))
                 print(f"getParams: ix={ix} .. {nx}")
+    print(f"plast={plast}")
     ap['plast']=plast
     return
 
 def emfr1(vec, p):	#array[n:3], array[1:3]
     r=vec-p
 #    print(f"r={r.shape}")
+#	hypot(x, y) Return the Euclidean norm, sqrt(x*x + y*y)
     e=r/norm(r)**3
 #    print(f"e={e.shape}")
     e0=np.sum(e,axis=0)
@@ -111,13 +114,17 @@ def main():
     print(f"main: field.shape={field.shape}")
     if True:
         ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
+        print(f"ap['kip']={ap['kip']} ap['mi']={ap['mi']}")
         xyz=ap['kip']*ixyz+ap['mi']
         print(f"xyz.shape={xyz.shape}")
+        print(f"xyz={xyz}")
         exyz=np.array(list(map(emfr2,xyz)))
         print(f"exyz.shape={exyz.shape}")
+        print(f"exyz={exyz}")
         for k in range(len(exyz)):
-            ix,iy,iz=ixyz[k]
-            field[ix,iy,iz]=exyz[k]
+#            ix,iy,iz=ixyz[k]
+#            field[ix,iy,iz]=exyz[k]
+            field[ixyz[k]]=exyz[k]
     else:
         for ix in range(nx):
             print(f" main: ix={ix} .. {nx}")
