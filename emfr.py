@@ -1,5 +1,8 @@
 #!/usr/bin/python3.7
 
+import cProfile
+import emfr
+ 
 import sys, time
 import pickle
 import numpy as np
@@ -75,13 +78,20 @@ def getParams():
     return
 
 def emfr1(vec, p):	#array[n:3], array[1:3]
+#    print(f"p={p}")
     r=vec-p
-#    print(f"r={r.shape}")
+#    print(f"r.shape={r.shape}")
+#    print(f"r={r}")
 #	hypot(x, y) Return the Euclidean norm, sqrt(x*x + y*y)
-    e=r/norm(r)**3
-#    print(f"e={e.shape}")
+    rnorm=(norm(r,axis=1)**3).reshape((r.shape[0],1))
+#    print(f"rnorm.shape={rnorm.shape}")
+#    print(f"rnorm={rnorm}")
+    e=r/rnorm
+#    print(f"e.shape={e.shape}")
+#    print(f"e={e}")
     e0=np.sum(e,axis=0)
 #    print(f"e0={e0}")
+#    sys.exit()
     return e0
 #    tmp=r/norm(r)**3
 #    rn3=norm(r)**3
@@ -151,4 +161,5 @@ def main():
     print('-'*40)
 
 if __name__ == "__main__":
-    main()
+    cProfile.run('emfr.main()')
+#    main()
