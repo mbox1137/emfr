@@ -3,6 +3,8 @@
 #Plotting a 3d surface from a list of tuples in matplotlib
 #https://stackoverflow.com/questions/21161884/plotting-a-3d-surface-from-a-list-of-tuples-in-matplotlib
 
+import pdb
+#pdb.set_trace()
 import sys
 import pickle
 import numpy as np
@@ -45,7 +47,12 @@ def main():
     with open("field.dump", 'rb') as fp:
         field=pickle.load(fp)
 
+    print("field=",field);
+
     fma=np.max(field)
+    print("fma=",fma);
+#    sys.exit()
+
     ixs=np.argwhere(np.abs(field-fma*porog)<0.01*fma)
     xs=ap['kip']*ixs+ap['mi']
     print("field:", field.size)

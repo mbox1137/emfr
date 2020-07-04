@@ -1,13 +1,16 @@
 #!/usr/bin/python3.7 -u
 
-import cProfile
-import emfr
+#import cProfile
+#import emfr
  
 import sys, time
 import pickle
 import numpy as np
 from numpy.linalg import norm
 import numexpr as ne
+
+import pdb
+pdb.set_trace()
 
 def getCMD(fp):
     while(True):
@@ -32,8 +35,8 @@ def parseCMD(cps):
 
 gp=dict()
 ap=dict()
-def getParams():
-    for s in getCMD(sys.stdin):
+def getParams(fp):
+    for s in getCMD(fp):
         param,params=parseCMD(s)
         if not param in gp:
             gp[param]=list()
@@ -112,7 +115,11 @@ def emfr2(p):	#array[1:3]
 
 def main():
     print('-'*40)
-    getParams()
+    if len(sys.argv)==1:
+        getParams(sys.stdin)
+    else:
+        with open(sys.argv[1]) as fp:
+            getParams(fp)
     for name,val in gp.items():
         print(name,':')
         print(val)
@@ -161,5 +168,5 @@ def main():
     print('-'*40)
 
 if __name__ == "__main__":
-    cProfile.run('emfr.main()')
-#    main()
+#    cProfile.run('emfr.main()')
+    main()
