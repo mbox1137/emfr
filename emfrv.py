@@ -49,15 +49,18 @@ def main():
 
     print("field=",field);
 
+    fmi=np.min(field)
     fma=np.max(field)
-    print("fma=",fma);
+    print(f"fmi={fmi} fma={fma}");
 #    sys.exit()
 
-    ixs=np.argwhere(np.abs(field-fma*porog)<0.01*fma)
+    df=fma-fmi
+#    ixs=np.argwhere(np.abs(field-fma*porog)<0.1*fma)
+    ixs=np.argwhere(np.abs((field-fmi)/df-porog)<0.1)
     xs=ap['kip']*ixs+ap['mi']
     print("field:", field.size)
     print("xs:", xs.shape)
-
+    """
     ng=11
     fldl=[[list() for i in range(ng)] for j in range(ng)]
     print("fldl:", len(fldl), len(fldl[0]))
@@ -77,6 +80,7 @@ def main():
                 flda[iz][ifi]=np.mean(np.array(fldl[iz][ifi]), axis=0).tolist()
     fld=np.array(flda)
     print(f"fld.shape={fld.shape}")
+    """
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -88,7 +92,6 @@ def main():
         color='r' if q>0.0 else 'b'
         for edge in getRectEdges(rt):
             ax.plot(*edge,color)
-
     if True:
         X, Y, Z = xs[:,0], xs[:,1], xs[:,2]
         ax.scatter(X,Y,Z,'.')

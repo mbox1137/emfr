@@ -3,14 +3,18 @@
 #import cProfile
 #import emfr
  
-import sys, time
+import sys, time, builtins
 import pickle
 import numpy as np
 from numpy.linalg import norm
 import numexpr as ne
 
 import pdb
-pdb.set_trace()
+#pdb.set_trace()
+
+def dprint(*args, **kwargs):
+    if False:
+        print(*args, **kwargs)
 
 def getCMD(fp):
     while(True):
@@ -81,19 +85,20 @@ def getParams(fp):
     return
 
 def emfr1(vec, p):	#array[n:3], array[1:3]
-#    print(f"p={p}")
+    dprint(f"vec={vec}")
+    dprint(f"p={p}")
     r=vec-p
-#    print(f"r.shape={r.shape}")
-#    print(f"r={r}")
+    dprint(f"r.shape={r.shape}")
+    dprint(f"r={r}")
 #	hypot(x, y) Return the Euclidean norm, sqrt(x*x + y*y)
-    rnorm=(norm(r,axis=1)**3).reshape((r.shape[0],1))
-#    print(f"rnorm.shape={rnorm.shape}")
-#    print(f"rnorm={rnorm}")
-    e=r/rnorm
-#    print(f"e.shape={e.shape}")
-#    print(f"e={e}")
+    rnorm=norm(r,axis=1).reshape((r.shape[0],1))
+    dprint(f"rnorm.shape={rnorm.shape}")
+    dprint(f"rnorm={rnorm}")
+    e=r/(rnorm**3)
+    dprint(f"e.shape={e.shape}")
+    dprint(f"e={e}")
     e0=np.sum(e,axis=0)
-#    print(f"e0={e0}")
+    dprint(f"e0={e0}")
 #    sys.exit()
     return e0
 #    tmp=r/norm(r)**3
