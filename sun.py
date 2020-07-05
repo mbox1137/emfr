@@ -118,6 +118,23 @@ def emfr2(p):	#array[1:3]
         print(f"{time.ctime(time.time())} {kk}")
     return norm(e)
 
+kk=0
+def sun(p):	#array[1:3]
+    global kk
+    p0=ap['kip']*ap['shape']*0.5+ap['mi']
+    dprint("p0=",p0)
+    r=p-p0
+    r0=norm(r)
+    dprint(r0)
+    dr=norm(ap['kip'])/2
+    if r0<dr:
+        r0=dr
+        r=np.array([dr]*3)
+    e=r/r0**3;
+    if kk%1000 == 0:
+        dprint(f"{time.ctime(time.time())} {kk}")
+    return norm(e)
+
 def main():
     print('-'*40)
     if len(sys.argv)==1:
@@ -126,8 +143,7 @@ def main():
         with open(sys.argv[1]) as fp:
             getParams(fp)
     for name,val in gp.items():
-        print(name,':')
-        print(val)
+        print(f"{name}: {val}")
 
     print('-'*40)
 
@@ -135,18 +151,20 @@ def main():
     field=np.zeros(ap['shape'])
     print(f"main: field.shape={field.shape}")
     if True:
-        ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
         print(f"ap['kip']={ap['kip']} ap['mi']={ap['mi']}")
+        ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
+        dprint(f"ixyz={ixyz}")
         xyz=ap['kip']*ixyz+ap['mi']
         print(f"xyz.shape={xyz.shape}")
-        print(f"xyz={xyz}")
-        exyz=np.array(list(map(emfr2,xyz)))
+        dprint(f"xyz={xyz}")
+        exyz=np.array(list(map(sun,xyz)))
         print(f"exyz.shape={exyz.shape}")
-        print(f"exyz={exyz}")
+        dprint(f"exyz={exyz}")
         for k in range(len(exyz)):
-#            ix,iy,iz=ixyz[k]
-#            field[ix,iy,iz]=exyz[k]
-            field[ixyz[k]]=exyz[k]
+            ix,iy,iz=ixyz[k]
+            field[ix,iy,iz]=exyz[k]
+#            field[ixyz[k]]=exyz[k]
+        dprint("field=",field)
     else:
         for ix in range(nx):
             print(f" main: ix={ix} .. {nx}")
