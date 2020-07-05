@@ -20,9 +20,16 @@ import matplotlib.pyplot as plt
 try:
     porog=float(sys.argv[1])
 except IndexError:
-    porog=0.6
+    porog=0.45
 except ValueError:
-    porog=0.6
+    porog=0.45
+
+try:
+    delta=float(sys.argv[2])
+except IndexError:
+    delta=0.02
+except ValueError:
+    delta=0.02
 
 def getRectEdges(rect):
     xmi,xma,ymi,yma,zmi,zma=rect
@@ -56,7 +63,7 @@ def main():
 
     df=fma-fmi
 #    ixs=np.argwhere(np.abs(field-fma*porog)<0.1*fma)
-    ixs=np.argwhere(np.abs((field-fmi)/df-porog)<0.02)
+    ixs=np.argwhere(np.abs((field-fmi)/df-porog)<delta)
     xs=ap['kip']*ixs+ap['mi']
     print("field:", field.size)
     print("xs:", xs.shape)
@@ -104,7 +111,7 @@ def main():
             X, Y, Z = fld[col,:,0], fld[col,:,1], fld[col,:,2]
             ax.plot(X,Y,Z,color)
 
-    plt.title(f"step={gp['step'][0][0]} porog={porog}*max")
+    plt.title(f"step={gp['step'][0][0]}, porog={porog}, delta={delta}")
     plt.savefig('emfrv.png', dpi=300)
     plt.show()
     plt.close()
