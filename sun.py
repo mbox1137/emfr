@@ -126,11 +126,11 @@ def sun(p):	#array[1:3]
     r=p-p0
     r0=norm(r)
     dprint(r0)
-    dr=norm(ap['kip'])/2
+    dr=norm(ap['kip'])
     if r0<dr:
         r0=dr
         r=np.array([dr]*3)
-    e=r/r0**3;
+    e=r/(r0**3)
     if kk%1000 == 0:
         dprint(f"{time.ctime(time.time())} {kk}")
     return norm(e)
@@ -157,7 +157,8 @@ def main():
         xyz=ap['kip']*ixyz+ap['mi']
         print(f"xyz.shape={xyz.shape}")
         dprint(f"xyz={xyz}")
-        exyz=np.array(list(map(sun,xyz)))
+#        exyz=np.array(list(map(sun,xyz)))
+        exyz=np.array(list(map(emfr2,xyz)))
         print(f"exyz.shape={exyz.shape}")
         dprint(f"exyz={exyz}")
         for k in range(len(exyz)):

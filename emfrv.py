@@ -56,7 +56,7 @@ def main():
 
     df=fma-fmi
 #    ixs=np.argwhere(np.abs(field-fma*porog)<0.1*fma)
-    ixs=np.argwhere(np.abs((field-fmi)/df-porog)<0.1)
+    ixs=np.argwhere(np.abs((field-fmi)/df-porog)<0.02)
     xs=ap['kip']*ixs+ap['mi']
     print("field:", field.size)
     print("xs:", xs.shape)
@@ -94,7 +94,7 @@ def main():
             ax.plot(*edge,color)
     if True:
         X, Y, Z = xs[:,0], xs[:,1], xs[:,2]
-        ax.scatter(X,Y,Z,'.')
+        ax.scatter(X,Y,Z,marker=".")
     else:
         color='g'
         for row in range(ng):
