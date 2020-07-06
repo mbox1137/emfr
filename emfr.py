@@ -3,7 +3,7 @@
 #import cProfile
 #import emfr
  
-import sys, time, builtins
+import os, sys, time, builtins
 import pickle
 import numpy as np
 from numpy.linalg import norm
@@ -57,12 +57,12 @@ def getParams(fp):
 #-------------------------------------------------
     plast=list()
     for pl in gp["rect"]:
-        print(f"pl={pl}")
+        dprint(f"pl={pl}")
         q,xmi,xma,ymi,yma,zmi,zma = pl
         nx=int((xma-xmi)/step)+1
         ny=int((yma-ymi)/step)+1
         nz=int((zma-zmi)/step)+1
-        print(f"getParams(plast): nx={nx} ny={ny} nz={nz}")
+        dprint(f"getParams(plast): nx={nx} ny={ny} nz={nz}")
         plast.append(list())
         plast[-1].append(q/(nx*ny*nz))
 #        plast[-1].append(None)	#np.zeros((0,3)))
@@ -79,8 +79,8 @@ def getParams(fp):
                         a2=np.array([xmi,ymi,zmi])+np.array([ix,iy,iz])*step
                         print(a1.shape,a2.shape)
                         plast[-1].append(np.vstack([a1,a2]))
-                print(f"getParams: ix={ix} .. {nx}")
-    print(f"plast={plast}")
+                dprint(f"getParams: ix={ix} .. {nx}")
+    dprint(f"plast={plast}")
     ap['plast']=plast
     return
 
@@ -137,15 +137,21 @@ def sun(p):	#array[1:3]
 
 def main():
     print('-'*40)
-    if len(sys.argv)==1:
-        getParams(sys.stdin)
+    if len(sys.argv)!=3:
+        print(f"{sys.argv[0]} 5 data/emfr.dat")
+        sys.exit()
     else:
-        with open(sys.argv[1]) as fp:
+        nmp=int(sys.argv[1])
+        datfile=sys.argv[2]
+        prefix, fn = os.path.split(datfile)
+        with open(datfile) as fp:
             getParams(fp)
+    print(f"Treads={nmp}")
+    print(f"prefix={prefix}")
     for name,val in gp.items():
         print(f"{name}: {val}")
-
     print('-'*40)
+    sys.exit()
 
     nx,ny,nz=map(int,ap['shape'])
     field=np.zeros(ap['shape'])
