@@ -5,7 +5,7 @@
 
 import pdb
 #pdb.set_trace()
-import sys
+import os, sys
 import pickle
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
@@ -16,20 +16,6 @@ import matplotlib.pyplot as plt
 
 #aa=np.array(list(range(60))).reshape((4,5,3))
 #print(aa.tolist())
-
-try:
-    porog=float(sys.argv[1])
-except IndexError:
-    porog=0.45
-except ValueError:
-    porog=0.45
-
-try:
-    delta=float(sys.argv[2])
-except IndexError:
-    delta=0.02
-except ValueError:
-    delta=0.02
 
 def getRectEdges(rect):
     xmi,xma,ymi,yma,zmi,zma=rect
@@ -45,15 +31,22 @@ def getRectEdges(rect):
                 yield res	#[[xmi,xma],[ymi,ymi],[zmi,zmi]]
     return
 
+if len(sys.argv)!=4:
+    print(f"{sys.argv[0]} data/emfr.dat 0.45 0.02")
+    sys.exit()
+datfile=sys.argv[1]
+prefix, fn = os.path.split(datfile)
+with open(prefix+"/gp.dump", 'rb') as fp:
+    gp=pickle.load(fp)
+with open(prefix+"/ap.dump", 'rb') as fp:
+    ap=pickle.load(fp)
+with open(prefix+"/field.dump", 'rb') as fp:
+    field=pickle.load(fp)
+porog=float(sys.argv[2])
+delta=float(sys.argv[3])
+
 def main():
     print('-'*40)
-    with open("gp.dump", 'rb') as fp:
-        gp=pickle.load(fp)
-    with open("ap.dump", 'rb') as fp:
-        ap=pickle.load(fp)
-    with open("field.dump", 'rb') as fp:
-        field=pickle.load(fp)
-
     print("field=",field);
 
     fmi=np.min(field)
