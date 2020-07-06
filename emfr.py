@@ -138,20 +138,19 @@ def sun(p):	#array[1:3]
 def main():
     print('-'*40)
     if len(sys.argv)!=3:
-        print(f"{sys.argv[0]} 5 data/emfr.dat")
+        print(f"{sys.argv[0]} data/emfr.dat 5")
         sys.exit()
     else:
-        nmp=int(sys.argv[1])
-        datfile=sys.argv[2]
+        datfile=sys.argv[1]
         prefix, fn = os.path.split(datfile)
         with open(datfile) as fp:
             getParams(fp)
+        nmp=int(sys.argv[2])
     print(f"Treads={nmp}")
     print(f"prefix={prefix}")
     for name,val in gp.items():
         print(f"{name}: {val}")
     print('-'*40)
-    sys.exit()
 
     nx,ny,nz=map(int,ap['shape'])
     field=np.zeros(ap['shape'])
@@ -188,11 +187,11 @@ def main():
                     field[ix,iy,iz]=norm(e)
     print('-'*40)
 
-    with open("gp.dump", 'wb') as fp:
+    with open(prefix+"/gp.dump", 'wb') as fp:
         pickle.dump(gp, fp, pickle.HIGHEST_PROTOCOL)
-    with open("ap.dump", 'wb') as fp:
+    with open(prefix+"/ap.dump", 'wb') as fp:
         pickle.dump(ap, fp, pickle.HIGHEST_PROTOCOL)
-    with open("field.dump", 'wb') as fp:
+    with open(prefix+"/field.dump", 'wb') as fp:
         pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
 
     print('-'*40)
