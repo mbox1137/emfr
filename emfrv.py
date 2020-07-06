@@ -13,6 +13,9 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
+def dprint(*args, **kwargs):
+    if False:
+        print(*args, **kwargs)
 
 #aa=np.array(list(range(60))).reshape((4,5,3))
 #print(aa.tolist())
@@ -47,7 +50,7 @@ delta=float(sys.argv[3])
 
 def main():
     print('-'*40)
-    print("field=",field);
+    dprint("field=",field);
 
     fmi=np.min(field)
     fma=np.max(field)
@@ -58,7 +61,7 @@ def main():
 #    ixs=np.argwhere(np.abs(field-fma*porog)<0.1*fma)
     ixs=np.argwhere(np.abs((field-fmi)/df-porog)<delta)
     xs=ap['kip']*ixs+ap['mi']
-    print("field:", field.size)
+    print("field:", field.shape)
     print("xs:", xs.shape)
     """
     ng=11
