@@ -38,7 +38,7 @@ if len(sys.argv)!=4:
     print(f"{sys.argv[0]} data/emfr.dat 0.45 0.02")
     sys.exit()
 datfile=sys.argv[1]
-prefix, fn = os.path.split(datfile)
+prefix, datfn = os.path.split(datfile)
 with open(prefix+"/gp.dump", 'rb') as fp:
     gp=pickle.load(fp)
 with open(prefix+"/ap.dump", 'rb') as fp:
@@ -108,10 +108,10 @@ def main():
             ax.plot(X,Y,Z,color)
 
     plt.title(f"step={gp['step'][0][0]}, porog={porog}, delta={delta}")
-    plt.savefig('emfrv.png', dpi=300)
+    dfname,dfext=datfn.split('.')
+    plt.savefig(os.path.join(prefix,dfname+'.png'), dpi=300)
     plt.show()
     plt.close()
-
     print('-'*40)
 
 if __name__ == "__main__":

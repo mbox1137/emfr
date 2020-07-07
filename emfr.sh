@@ -1,6 +1,5 @@
 #!/bin/bash
 
 #time ./emfr.py <121.dat >emfr.log
-time ./emfr.py <emfr.dat
-#./emfr.py <emfr.dat
-#python3.7 -m cProfile ptest.py
+#./emfr.py data/emfr.dat 5
+#./emfrv.py data/emfr.dat 0.45 0.02
