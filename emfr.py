@@ -145,7 +145,7 @@ else:
         getParams(fp)
     nmp=int(sys.argv[2])
 
-def main():
+def main_():
     print('-'*40)
     print(f"Treads={nmp}")
     print(f"prefix={prefix}")
@@ -197,6 +197,22 @@ def main():
 
     print('-'*40)
 
+def main():
+    nx,ny,nz=map(int,ap['shape'])
+    field=np.zeros(ap['shape'])
+    ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
+    xyz=ap['kip']*ixyz+ap['mi']
+    exyz=np.array(list(map(emfr2,xyz)))
+    for k in range(len(exyz)):
+        ix,iy,iz=ixyz[k]
+        field[ix,iy,iz]=exyz[k]
+    with open(prefix+"/gp.dump", 'wb') as fp:
+        pickle.dump(gp, fp, pickle.HIGHEST_PROTOCOL)
+    with open(prefix+"/ap.dump", 'wb') as fp:
+        pickle.dump(ap, fp, pickle.HIGHEST_PROTOCOL)
+    with open(prefix+"/field.dump", 'wb') as fp:
+        pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
+
 def f(num,lin,lout,qin,qout):
     while not qin.empty():
         lin.acquire()
@@ -205,13 +221,14 @@ def f(num,lin,lout,qin,qout):
         finally:
             lin.release()
 
-        time.sleep(0.1)
+        time.sleep(1)
 
         lout.acquire()
         try:
             qout.put(f"{num}: {s}")
         finally:
             lout.release()
+    return
 
 if __name__ == "__main__":
 #    cProfile.run('emfr.main()')
@@ -222,14 +239,19 @@ if __name__ == "__main__":
     procs=list()
     for k in range(nmp):
         proc=mp.Process(target=f, args=(k,lin,lout,qin,qout))
+        proc.daemon=True
         procs.append(proc)
     for k in range(nmp*3):
-        qin.put(f"k={k}")
-    for k in range(nmp):
-        procs[k].start()
-    for k in range(nmp*3):
+        qin.put(f"{k}")
+    for proc in procs:
+        proc.start()
+    while True:
+        if (not any(proc.is_alive() for proc in procs)) and qout.empty():
+            break
+        else:
+            time.sleep(0.1)
         print(f"recived: {qout.get()}")
-    for k in range(nmp):
-        procs[k].join()
+    for proc in procs:
+        proc.join()
 
 #    main()
