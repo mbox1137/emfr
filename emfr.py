@@ -8,7 +8,7 @@ import pickle
 import numpy as np
 from numpy.linalg import norm
 import numexpr as ne
-
+import multiprocessing as mp
 import pdb
 #pdb.set_trace()
 
@@ -135,17 +135,18 @@ def sun(p):	#array[1:3]
         dprint(f"{time.ctime(time.time())} {kk}")
     return norm(e)
 
+if len(sys.argv)!=3:
+    print(f"{sys.argv[0]} data/emfr.dat 5")
+    sys.exit()
+else:
+    datfile=sys.argv[1]
+    prefix, fn = os.path.split(datfile)
+    with open(datfile) as fp:
+        getParams(fp)
+    nmp=int(sys.argv[2])
+
 def main():
     print('-'*40)
-    if len(sys.argv)!=3:
-        print(f"{sys.argv[0]} data/emfr.dat 5")
-        sys.exit()
-    else:
-        datfile=sys.argv[1]
-        prefix, fn = os.path.split(datfile)
-        with open(datfile) as fp:
-            getParams(fp)
-        nmp=int(sys.argv[2])
     print(f"Treads={nmp}")
     print(f"prefix={prefix}")
     for name,val in gp.items():
@@ -196,6 +197,26 @@ def main():
 
     print('-'*40)
 
+def f(num,lin,lout,qin,qout):
+    return
+    l.acquire()
+    try:
+        print('hello world', i)
+    finally:
+        l.release()
+
 if __name__ == "__main__":
 #    cProfile.run('emfr.main()')
+    qin = mp.Queue()
+    qout = mp.Queue()
+    lin = mp.Lock()
+    lout = mp.Lock()
+    procs=list()
+    for k in range(nmp):
+        proc=mp.Process(target=f, args=(k,lin,lout,qin,qout))
+        procs.append(proc)
+    for k in range(nmp):
+        procs[k].start()
+    for k in range(nmp):
+        procs[k].join()
     main()
