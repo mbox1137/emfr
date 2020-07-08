@@ -198,12 +198,20 @@ def main():
     print('-'*40)
 
 def f(num,lin,lout,qin,qout):
-    return
-    l.acquire()
-    try:
-        print('hello world', i)
-    finally:
-        l.release()
+    while not qin.empty():
+        lin.acquire()
+        try:
+            s=qin.get()
+        finally:
+            lin.release()
+
+        time.sleep(0.1)
+
+        lout.acquire()
+        try:
+            qout.put(f"{num}: {s}")
+        finally:
+            lout.release()
 
 if __name__ == "__main__":
 #    cProfile.run('emfr.main()')
@@ -215,8 +223,13 @@ if __name__ == "__main__":
     for k in range(nmp):
         proc=mp.Process(target=f, args=(k,lin,lout,qin,qout))
         procs.append(proc)
+    for k in range(nmp*3):
+        qin.put(f"k={k}")
     for k in range(nmp):
         procs[k].start()
+    for k in range(nmp*3):
+        print(f"recived: {qout.get()}")
     for k in range(nmp):
         procs[k].join()
-    main()
+
+#    main()
