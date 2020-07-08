@@ -197,41 +197,36 @@ def main_():
 
     print('-'*40)
 
-def main():
-    nx,ny,nz=map(int,ap['shape'])
-    field=np.zeros(ap['shape'])
-    ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
-    xyz=ap['kip']*ixyz+ap['mi']
-    exyz=np.array(list(map(emfr2,xyz)))
-    for k in range(len(exyz)):
-        ix,iy,iz=ixyz[k]
-        field[ix,iy,iz]=exyz[k]
-    with open(prefix+"/gp.dump", 'wb') as fp:
-        pickle.dump(gp, fp, pickle.HIGHEST_PROTOCOL)
-    with open(prefix+"/ap.dump", 'wb') as fp:
-        pickle.dump(ap, fp, pickle.HIGHEST_PROTOCOL)
-    with open(prefix+"/field.dump", 'wb') as fp:
-        pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
+def emfr3(p):	#array[1:3]
+    e=np.zeros((1,3))
+    for q,pla in ap['plast']:
+        e+=emfr1(pla,p)*q
+    return norm(e)
 
 def f(num,lin,lout,qin,qout):
     while not qin.empty():
         lin.acquire()
         try:
-            s=qin.get()
+            xyz_,ixyz_=qin.get()
         finally:
             lin.release()
-
-        time.sleep(1)
-
+        e=emfr3(xyz_)
         lout.acquire()
         try:
-            qout.put(f"{num}: {s}")
+            qout.put((ixyz_,e))
         finally:
             lout.release()
     return
 
 if __name__ == "__main__":
 #    cProfile.run('emfr.main()')
+    nx,ny,nz=map(int,ap['shape'])
+    field=np.zeros(ap['shape'])
+    ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
+    xyz=ap['kip']*ixyz+ap['mi']
+
+#    exyz=np.array(list(map(emfr2,xyz)))
+
     qin = mp.Queue()
     qout = mp.Queue()
     lin = mp.Lock()
@@ -241,17 +236,29 @@ if __name__ == "__main__":
         proc=mp.Process(target=f, args=(k,lin,lout,qin,qout))
         proc.daemon=True
         procs.append(proc)
-    for k in range(nmp*3):
-        qin.put(f"{k}")
+    for k in range(len(ixyz)):
+        qin.put((xyz[k],ixyz[k]))
     for proc in procs:
         proc.start()
     while True:
-        if (not any(proc.is_alive() for proc in procs)) and qout.empty():
+        if kk>len(ixyz)-nmp:
+            time.sleep(1)
+        pflag=any(proc.is_alive() for proc in procs)
+        qflag=qout.empty()
+        if not pflag and qflag:
             break
-        else:
-            time.sleep(0.1)
-        print(f"recived: {qout.get()}")
+        (ix,iy,iz),e=qout.get()
+        field[ix,iy,iz]=e
+        kk+=1
+        if kk%1000 == 0:
+            print(f"{time.ctime(time.time())} {kk}")
     for proc in procs:
         proc.join()
 
-#    main()
+    with open(prefix+"/gp.dump", 'wb') as fp:
+        pickle.dump(gp, fp, pickle.HIGHEST_PROTOCOL)
+    with open(prefix+"/ap.dump", 'wb') as fp:
+        pickle.dump(ap, fp, pickle.HIGHEST_PROTOCOL)
+    with open(prefix+"/field.dump", 'wb') as fp:
+        pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
+
