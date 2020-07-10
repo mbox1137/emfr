@@ -14,7 +14,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 def dprint(*args, **kwargs):
-    if False:
+    if True:
         print(*args, **kwargs)
 
 #aa=np.array(list(range(60))).reshape((4,5,3))
@@ -35,7 +35,7 @@ def getRectEdges(rect):
     return
 
 if len(sys.argv)!=4:
-    print(f"{sys.argv[0]} data/emfr.dat 0.45 0.02")
+    print(f"{sys.argv[0]} data/emfr.dat 0.002 [0.8]")
     sys.exit()
 datfile=sys.argv[1]
 prefix, datfn = os.path.split(datfile)
@@ -45,21 +45,39 @@ with open(prefix+"/ap.dump", 'rb') as fp:
     ap=pickle.load(fp)
 with open(prefix+"/field.dump", 'rb') as fp:
     field=pickle.load(fp)
-porog=float(sys.argv[2])
-delta=float(sys.argv[3])
+delta=float(sys.argv[2])
+porog=float(sys.argv[3])
 
+"""
+----------------------------------------
+Treads=5
+prefix=data/120x120x120
+step: [[0.02]]
+field: [[-1.2, 1.2, -1.2, 1.2, -1.2, 1.2]]
+rect: [[1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.1], [-1.0, -1.0, 1.0, -1.0, 1.0, -1.1, -1.0]]
+----------------------------------------
+"""
 def main():
     print('-'*40)
     dprint("field=",field);
 
-    fmi=np.min(field)
-    fma=np.max(field)
-    print(f"fmi={fmi} fma={fma}");
-#    sys.exit()
+    print(f"NaNs: {len(np.isnan(field))}")
+    q=abs(gp["rect"][1][0]-gp["rect"][0][0])
+    field[np.isnan(field)]=np.finfo(float).max
+    fmax=3	#q/(gp["step"][0][0]*20)**2
+    print(f"fmax={fmax}")
+    nh=20
+    bins=np.append(np.linspace(0,fmax,nh), np.finfo(float).max)
+    print(bins)
+    counts, edges = np.histogram(field, bins)
+    print(counts)
+    print(edges)
+    maxind=np.where(counts == np.amax(counts))[0][0]
+    print(maxind)
+    porog=(edges[maxind]+edges[maxind+1])/2
+    print(porog)
 
-    df=fma-fmi
-#    ixs=np.argwhere(np.abs(field-fma*porog)<0.1*fma)
-    ixs=np.argwhere(np.abs((field-fmi)/df-porog)<delta)
+    ixs=np.argwhere(np.abs(field-porog)<delta)
     xs=ap['kip']*ixs+ap['mi']
     print("field:", field.shape)
     print("xs:", xs.shape)
@@ -107,7 +125,7 @@ def main():
             X, Y, Z = fld[col,:,0], fld[col,:,1], fld[col,:,2]
             ax.plot(X,Y,Z,color)
 
-    plt.title(f"step={gp['step'][0][0]}, porog={porog}, delta={delta}")
+    plt.title(f"step={gp['step'][0][0]}, porog={round(porog,3)}, delta={delta}")
     dfname,dfext=datfn.split('.')
     plt.savefig(os.path.join(prefix,dfname+'.png'), dpi=300)
     plt.show()

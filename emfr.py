@@ -171,7 +171,8 @@ def main_():
             ix,iy,iz=ixyz[k]
             field[ix,iy,iz]=exyz[k]
 #            field[ixyz[k]]=exyz[k]
-        dprint("field=",field)
+        print(f"xyz.shape={xyz.shape}")
+        print(f"field.shape=",field.shape)
     else:
         for ix in range(nx):
             print(f" main: ix={ix} .. {nx}")
@@ -220,12 +221,19 @@ def f(num,lin,lout,qin,qout):
 
 if __name__ == "__main__":
 #    cProfile.run('emfr.main()')
+    print('-'*40)
+    print(f"Treads={nmp}")
+    print(f"prefix={prefix}")
+    for name,val in gp.items():
+        print(f"{name}: {val}")
+    print('-'*40)
+    sys.exit()
     nx,ny,nz=map(int,ap['shape'])
     field=np.zeros(ap['shape'])
     ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
     xyz=ap['kip']*ixyz+ap['mi']
-
-#    exyz=np.array(list(map(emfr2,xyz)))
+    print(f"xyz.shape={xyz.shape}")
+    print(f"field.shape=",field.shape)
 
     qin = mp.Queue()
     qout = mp.Queue()
@@ -238,6 +246,7 @@ if __name__ == "__main__":
         procs.append(proc)
     for k in range(len(ixyz)):
         qin.put((xyz[k],ixyz[k]))
+    print("Start.")
     for proc in procs:
         proc.start()
     while True:
