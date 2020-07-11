@@ -198,6 +198,16 @@ def main_():
 
     print('-'*40)
 
+def inbox(p):
+    x,y,z = p
+    for pl in gp["rect"]:
+        q,xmi,xma,ymi,yma,zmi,zma = pl
+        if((x>=xmi and x<=xma) and
+           (y>=ymi and y<=yma) and 
+           (z>=zmi and z<=zma)):
+            return True           
+    return False
+
 def emfr3(p):	#array[1:3]
     e=np.zeros((1,3))
     for q,pla in ap['plast']:
@@ -227,9 +237,10 @@ if __name__ == "__main__":
     for name,val in gp.items():
         print(f"{name}: {val}")
     print('-'*40)
-    sys.exit()
+#    sys.exit()
     nx,ny,nz=map(int,ap['shape'])
     field=np.zeros(ap['shape'])
+    field=field+np.nan
     ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
     xyz=ap['kip']*ixyz+ap['mi']
     print(f"xyz.shape={xyz.shape}")
@@ -245,6 +256,8 @@ if __name__ == "__main__":
         proc.daemon=True
         procs.append(proc)
     for k in range(len(ixyz)):
+        if inbox(xyz[k]):
+            continue
         qin.put((xyz[k],ixyz[k]))
     print("Start.")
     for proc in procs:
