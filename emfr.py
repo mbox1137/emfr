@@ -264,6 +264,7 @@ if __name__ == "__main__":
     print(f"Start ({len(procs)}: {npo})")
     for proc in procs:
         proc.start()
+    t0=time.time()
     while True:
         if kk>len(ixyz)-nmp:
             time.sleep(1)
@@ -275,7 +276,9 @@ if __name__ == "__main__":
         field[ix,iy,iz]=e
         kk+=1
         if kk%1000 == 0:
-            print(f"{time.ctime(time.time())} {kk}")
+            t=time.time()
+            tx=(t-t0)/kk*(npo-kk)+t
+            print(f"{time.ctime(tx)} {kk}")
     for proc in procs:
         proc.join()
 
