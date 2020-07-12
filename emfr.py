@@ -255,11 +255,13 @@ if __name__ == "__main__":
         proc=mp.Process(target=f, args=(k,lin,lout,qin,qout))
         proc.daemon=True
         procs.append(proc)
+    npo=0
     for k in range(len(ixyz)):
         if inbox(xyz[k]):
             continue
         qin.put((xyz[k],ixyz[k]))
-    print("Start.")
+        npo+=1
+    print(f"Start ({len(procs)}: {npo})")
     for proc in procs:
         proc.start()
     while True:
