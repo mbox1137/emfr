@@ -265,20 +265,30 @@ if __name__ == "__main__":
     for proc in procs:
         proc.start()
     t0=time.time()
-    while True:
-        if kk>len(ixyz)-nmp:
-            time.sleep(1)
-        pflag=any(proc.is_alive() for proc in procs)
-        qflag=qout.empty()
-        if not pflag and qflag:
-            break
-        (ix,iy,iz),e=qout.get()
-        field[ix,iy,iz]=e
-        kk+=1
-        if kk%1000 == 0:
-            t=time.time()
-            tx=(t-t0)/kk*(npo-kk)+t
-            print(f"{time.ctime(tx)} {kk}")
+    work=True
+    try:
+        while work:
+            if qin.qsize()<2*nmp:
+                time.sleep(1)
+            pflag=any(proc.is_alive() for proc in procs)
+            qflag=qout.empty()
+            if not pflag and qflag:
+                break
+            (ix,iy,iz),e=qout.get()
+            field[ix,iy,iz]=e
+            kk+=1
+            if kk%1000 == 0:
+                t=time.time()
+                tx=(t-t0)/kk*(npo-kk)+t
+                print(f"{time.ctime(tx)} {kk}")
+    except KeyboardInterrupt:
+        work=False
+    time.sleep(1)
+    print("qq")
+
+    for proc in procs:
+        proc.terminate()
+
     for proc in procs:
         proc.join()
 
@@ -289,3 +299,4 @@ if __name__ == "__main__":
     with open(prefix+"/field.dump", 'wb') as fp:
         pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
 
+    print("qqq")
