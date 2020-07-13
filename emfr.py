@@ -238,11 +238,26 @@ if __name__ == "__main__":
         print(f"{name}: {val}")
     print('-'*40)
 #    sys.exit()
+    dumpfromfile=True
+    try:
+        datfile=sys.argv[1]
+        prefix, datfn = os.path.split(datfile)
+        with open(prefix+"/field.dump", 'rb') as fp:
+            field=pickle.load(fp)
+    except:
+        dumpfromfile=False
+
+    if not dumpfromfile or (ap['shape']!=field.shape).any():
+        field=np.zeros(ap['shape'])
     nx,ny,nz=map(int,ap['shape'])
-    field=np.zeros(ap['shape'])
-    field=field+np.nan
     ixyz=[[ix,iy,iz] for ix in range(nx) for iy in range(ny) for iz in range(nz)]
     xyz=ap['kip']*ixyz+ap['mi']
+        
+    for k in range(len(ixyz)):
+        ix, iy, iz = ixyz[k]
+        if field[ix, iy, iz]==0.0 and inbox(xyz[k]):
+            field[ix, iy, iz]=np.nan
+
     print(f"xyz.shape={xyz.shape}")
     print(f"field.shape=",field.shape)
 
@@ -257,7 +272,8 @@ if __name__ == "__main__":
         procs.append(proc)
     npo=0
     for k in range(len(ixyz)):
-        if inbox(xyz[k]):
+        ix, iy, iz = ixyz[k]
+        if field[ix, iy, iz]!=0.0:
             continue
         qin.put((xyz[k],ixyz[k]))
         npo+=1
