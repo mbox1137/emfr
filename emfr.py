@@ -215,8 +215,11 @@ def emfr3(p):	#array[1:3]
     return norm(e)
 
 def f(num,lin,lout,qin,qout):
-    while not qin.empty():
+    while True:
         lin.acquire()
+        if qin.empty():
+            lin.release()
+            break
         try:
             xyz_,ixyz_=qin.get()
         finally:
@@ -284,8 +287,13 @@ if __name__ == "__main__":
     work=True
     try:
         while work:
-            if qin.qsize()<2*nmp:
-                time.sleep(1)
+            fin=qin.qsize()<nmp
+            if fin:
+                nx=nmp-qin.qsize()
+                dt=1.0
+                if nx>0:
+                    dt /= nx
+                time.sleep(dt)
             pflag=any(proc.is_alive() for proc in procs)
             qflag=qout.empty()
             if not pflag and qflag:
@@ -293,7 +301,7 @@ if __name__ == "__main__":
             (ix,iy,iz),e=qout.get()
             field[ix,iy,iz]=e
             kk+=1
-            if kk%1000 == 0:
+            if kk%1000 == 0 or fin:
                 t=time.time()
                 tx=(t-t0)/kk*(npo-kk)+t
                 print(f"{time.ctime(tx)} {kk}")
