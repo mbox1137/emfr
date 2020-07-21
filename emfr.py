@@ -13,7 +13,7 @@ import pdb
 #pdb.set_trace()
 
 def dprint(*args, **kwargs):
-    if False:
+    if True:
         print(*args, **kwargs)
 
 def getCMD(fp):
@@ -289,10 +289,10 @@ if __name__ == "__main__":
         while work:
             fin=qin.qsize()<nmp
             if fin:
-                nx=nmp-qin.qsize()
+                ndt=nmp-qin.qsize()
                 dt=1.0
                 if nx>0:
-                    dt /= nx
+                    dt /= ndt
                 time.sleep(dt)
             pflag=any(proc.is_alive() for proc in procs)
             qflag=qout.empty()
