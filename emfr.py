@@ -12,8 +12,10 @@ import multiprocessing as mp
 import pdb
 #pdb.set_trace()
 
+dbg=False
+
 def dprint(*args, **kwargs):
-    if True:
+    if dbg:
         print(*args, **kwargs)
 
 def getCMD(fp):
@@ -240,7 +242,10 @@ if __name__ == "__main__":
     for name,val in gp.items():
         print(f"{name}: {val}")
     print('-'*40)
-#    sys.exit()
+    if nmp==0:
+        dbg=True
+        dprint("q")
+        sys.exit()
     dumpfromfile=True
     try:
         datfile=sys.argv[1]
