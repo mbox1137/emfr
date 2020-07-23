@@ -210,11 +210,14 @@ def inbox(p):
             return True           
     return False
 
-def emfr3(p):	#array[1:3]
-    e=np.zeros((1,3))
-    for q,pla in ap['plast']:
-        e+=emfr1(pla,p)*q
-    return norm(e)
+def emfr3(p, pvec=ap['plast']):	#array[1:3]
+    e0=np.zeros((1,3))
+    for q,pla in pvec:
+        e=emfr1(pla,p)*q
+        dprint(f"p={p} e={e}")
+        e0+=e
+    dprint(f"p={p}\te0={e0}")
+    return norm(e0)
 
 def f(num,lin,lout,qin,qout):
     while True:
@@ -242,9 +245,38 @@ if __name__ == "__main__":
     for name,val in gp.items():
         print(f"{name}: {val}")
     print('-'*40)
+    for name,val in ap.items():
+        print(f"{name}: {val}")
+    with open(prefix+"/gp.dump", 'wb') as fp:
+        pickle.dump(gp, fp, pickle.HIGHEST_PROTOCOL)
+    with open(prefix+"/ap.dump", 'wb') as fp:
+        pickle.dump(ap, fp, pickle.HIGHEST_PROTOCOL)
+    print('-'*40)
     if nmp==0:
         dbg=True
-        dprint("q")
+        """
+plast: [[-1.633826749011535e-05, array([[-1.  ,  4.  ,  1.  ],
+       [-1.  ,  4.  ,  1.02],
+       [-1.  ,  4.  ,  1.04],
+       ...,
+       [ 1.  ,  6.  ,  1.06],
+       [ 1.  ,  6.  ,  1.08],
+       [ 1.  ,  6.  ,  1.1 ]])], [1.633826749011535e-05, array([[-1.  , -1.  ,  1.  ],
+       [-1.  , -1.  ,  1.02],
+       [-1.  , -1.  ,  1.04],
+       ...,
+       [ 1.  ,  1.  ,  1.06],
+       [ 1.  ,  1.  ,  1.08],
+       [ 1.  ,  1.  ,  1.1 ]])]]
+        """
+        p=np.array([0,0,0]).reshape((1,3))
+        p1=[-10, np.array([[-1,-2,-3],[-4,-5,-6]])]
+        p2=[ 10, np.array([[ 1, 2, 3],[ 4, 5, 6]])]
+        pp=[p1,p2]
+        dprint(f"p ={p}")
+        dprint(f"pp={pp}")
+        e=emfr3(p, pp)
+        dprint(f"e={e}")
         sys.exit()
     dumpfromfile=True
     try:
@@ -289,6 +321,7 @@ if __name__ == "__main__":
     for proc in procs:
         proc.start()
     t0=time.time()
+    tdump=t0+3600
     work=True
     try:
         while work:
@@ -310,6 +343,11 @@ if __name__ == "__main__":
                 t=time.time()
                 tx=(t-t0)/kk*(npo-kk)+t
                 print(f"{time.ctime(tx)} {kk}")
+                if t>tdump:
+                    tdump+=3600
+                    print(f"dump:\t{time.ctime(t)} {kk}")
+                    with open(prefix+"/field.dump", 'wb') as fp:
+                        pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
     except KeyboardInterrupt:
         work=False
     time.sleep(1)
@@ -321,10 +359,6 @@ if __name__ == "__main__":
     for proc in procs:
         proc.join()
 
-    with open(prefix+"/gp.dump", 'wb') as fp:
-        pickle.dump(gp, fp, pickle.HIGHEST_PROTOCOL)
-    with open(prefix+"/ap.dump", 'wb') as fp:
-        pickle.dump(ap, fp, pickle.HIGHEST_PROTOCOL)
     with open(prefix+"/field.dump", 'wb') as fp:
         pickle.dump(field, fp, pickle.HIGHEST_PROTOCOL)
 
