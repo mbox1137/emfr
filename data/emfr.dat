@@ -1,6 +1,0 @@
-#ElecroMagnetic Field Resolver
-
-step 0.07				#one for all
-field -1.2 1.2 -1.2 1.2 -1.2 1.2	#x1 x2 y1 y2 z1 z2
-rect  1 -1 1 -1 1  1.0  1.1		#q x1 x2 y1 y2 z1 z2
-rect -1 -1 1 -1 1 -1.1 -1.0		#q x1 x2 y1 y2 z1 z2
