@@ -112,6 +112,9 @@ def main():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.view_init(20,35)	#degree
+    ax.set_xlim3d(gp['field'][0][0:2])
+    ax.set_ylim3d(gp['field'][0][2:4])
+    ax.set_zlim3d(gp['field'][0][4:6])
 
     for rect in gp['rect']:
         rt=list(rect)
