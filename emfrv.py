@@ -134,7 +134,7 @@ def main():
             X, Y, Z = fld[col,:,0], fld[col,:,1], fld[col,:,2]
             ax.plot(X,Y,Z,color)
 
-    plt.title(f"step={gp['step'][0][0]}, porog={round(porog,3)}, delta={delta}")
+    plt.title(f"step={gp['step'][0][0]}, delta={delta}, porog={round(porog,3)}")
     dfname,dfext=datfn.split('.')
     plt.savefig(os.path.join(prefix,dfname+'.png'), dpi=300)
     plt.show()
