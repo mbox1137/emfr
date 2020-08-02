@@ -3,6 +3,7 @@
 #Plotting a 3d surface from a list of tuples in matplotlib
 #https://stackoverflow.com/questions/21161884/plotting-a-3d-surface-from-a-list-of-tuples-in-matplotlib
 
+#import tkinter
 import pdb
 #pdb.set_trace()
 import os, sys
