@@ -7,7 +7,7 @@ import os, sys, time, builtins
 import pickle
 import numpy as np
 from numpy.linalg import norm
-import numexpr as ne
+#import numexpr as ne
 import multiprocessing as mp
 import pdb
 #pdb.set_trace()
