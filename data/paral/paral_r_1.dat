@@ -1,0 +1,6 @@
+
+step 0.1                                #one for all
+field -5.0 3.0 -4.5 8.0 -2.0 1.1        #x1 x2 y1 y2 z1 z2
+rect -1 -1 1  6 8  1.0  1.1             #q x1 x2 y1 y2 z1 z2
+rect  1 -1 1 -1 1  1.0  1.1             #q x1 x2 y1 y2 z1 z2
+
